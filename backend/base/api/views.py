@@ -69,18 +69,20 @@ class CustomUserProductView(APIView):
         except UserProducts.DoesNotExist:
             raise Http404("User does not exist")
 
+
     def post(self, request):
         parser_classes = (MultiPartParser, )
-        userid = self.request.query_params.get('userid')
+        user_email = request.user.email
         try:
-            user = UserProducts.objects.create(id=userid)
+            created_by = CustomUser.objects.get(email=user_email)
+            user = UserProducts.objects.create(user=created_by)
             serializer = CustomUserProductSerializer(user, data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response({'message': 'User updated successfully'}, status=status.HTTP_200_OK)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except UserProducts.DoesNotExist:
+        except CustomUser.DoesNotExist:
             raise Http404("User does not exist")
         
 class BlacklistTokenView(APIView):

@@ -83,6 +83,11 @@ class CustomUserDetailsSerializer(serializers.ModelSerializer):
         exclude=['password','is_active','is_superuser']
 
 class CustomUserProductSerializer(serializers.ModelSerializer):
+    parser_classes = (MultiPartParser, FormParser)
+    product_image = Base64ImageField(
+        max_length=None, use_url=True,
+    ) 
     class Meta:
         model = UserProducts
-        exclude = ('password', )
+        fields ='__all__'
+        read_only_fields = ('user',)

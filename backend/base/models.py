@@ -26,6 +26,8 @@ class LowercaseEmailField(models.EmailField):
 def upload_to(instance, filename):
     return 'base/images/{filename}'.format(filename=filename)
 
+def uploadproduct(instance, filename):
+    return 'base/images/{filename}'.format(filename=filename)
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     USER_CHOICES=[
         ('employee','Employee'),
@@ -62,12 +64,36 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     
 
 class UserProducts(models.Model):
+    TYPES_CHOICES = [
+        ('Phone', 'Phone'),
+        ('Headset', 'Headset'),
+        ('Laptop', 'Laptop'),
+        ('Mixer', 'Mixer'),
+        ('Refrigerator', 'Refrigerator'),
+        ('Speaker', 'Speaker'),
+        ('Television', 'Television'),
+        ('Washing Machine', 'Washing Machine')
+    ]
+    
+    CONDITION_CHOICES = [
+        ('Excellent', 'Excellent'),
+        ('Good', 'Good'),
+        ('Worst', 'Worst')
+    ]
+
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    type = models.CharField(default='',max_length=20)
-    manufacturer = models.CharField(default='',max_length=20)
-    model = models.CharField(default='',max_length=20)
-    condition = models.CharField(default='',max_length=20)
+    model = models.CharField(max_length=100, default='',blank=True,null=True)
+    manufacturer = models.CharField(max_length=100, default='',blank=True,null=True)
+    product_type = models.CharField(choices=TYPES_CHOICES, max_length=20, default='',blank=True,null=True) 
+    condition = models.CharField(choices=CONDITION_CHOICES, max_length=20, default='',blank=True,null=True)  
+    metal_quantity = models.JSONField(default=str) 
+    coins = models.IntegerField(default=0,blank=True,null=True)
+    product_image = models.ImageField(upload_to=uploadproduct, default="",blank=True,null=True)
+    approved = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        return self.model 
+
+
+
 
