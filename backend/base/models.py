@@ -80,16 +80,22 @@ class UserProducts(models.Model):
         ('Good', 'Good'),
         ('Worst', 'Worst')
     ]
-
+    STATUS_CHOICES = [
+        ('None', 'None'),
+        ('Yes', 'Yes'),
+        ('No', 'No')
+    ]
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     model = models.CharField(max_length=100, default='',blank=True,null=True)
     manufacturer = models.CharField(max_length=100, default='',blank=True,null=True)
     product_type = models.CharField(choices=TYPES_CHOICES, max_length=20, default='',blank=True,null=True) 
     condition = models.CharField(choices=CONDITION_CHOICES, max_length=20, default='',blank=True,null=True)  
-    metal_quantity = models.JSONField(default=str) 
+    metal_quantity = models.JSONField(default=str,blank=True,null=True) 
     coins = models.IntegerField(default=0,blank=True,null=True)
     product_image = models.ImageField(upload_to=uploadproduct, default="",blank=True,null=True)
-    approved = models.BooleanField(default=False)
+    status = models.CharField(choices=STATUS_CHOICES, max_length=20, default='',blank=True,null=True) 
+    created_on = models.DateTimeField(auto_now=True)
+    orderno = models.CharField(max_length=30,blank=True,default=True,null=True)
 
     def __str__(self):
         return self.model 

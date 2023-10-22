@@ -61,25 +61,32 @@ class CustomUserProductView(APIView):
     serializer_class = CustomUserProductSerializer
 
     def get(self, request):
-        userid = self.request.query_params.get('userid')
+        userid = request.user.id
+        print(userid)
         try:
-            user = UserProducts.objects.get(id=userid)
-            serializer = CustomUserProductSerializer(user)
+            user = UserProducts.objects.filter(user=userid)
+            print(user)
+            serializer = CustomUserProductSerializer(user, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except UserProducts.DoesNotExist:
             raise Http404("User does not exist")
 
-
     def post(self, request):
-        parser_classes = (MultiPartParser, )
         user_email = request.user.email
         try:
             created_by = CustomUser.objects.get(email=user_email)
-            user = UserProducts.objects.create(user=created_by)
-            serializer = CustomUserProductSerializer(user, data=request.data)
+            user_product = UserProducts(user=created_by)
+
+            # You can generate a random order number of length 10
+            import random
+            import string
+            order_no = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+            user_product.orderno = order_no
+            user_product.status = 'None'
+            serializer = CustomUserProductSerializer(user_product, data=request.data)
             if serializer.is_valid():
                 serializer.save()
-                return Response({'message': 'User updated successfully'}, status=status.HTTP_200_OK)
+                return Response({'message': 'User product created successfully'}, status=status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except CustomUser.DoesNotExist:
@@ -87,7 +94,6 @@ class CustomUserProductView(APIView):
         
 class BlacklistTokenView(APIView):
     permission_classes = [AllowAny]
-
     def post(self, request):
         try:
             refresh_token = request.data["refresh_token"]
