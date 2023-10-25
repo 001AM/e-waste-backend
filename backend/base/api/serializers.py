@@ -57,19 +57,19 @@ class Base64ImageField(serializers.ImageField):
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ('email','username','phone')
+        fields = ('email', 'username', 'phone', 'password', 'user_choices')
 
     def create(self, validated_data):
         email = validated_data.get('email')
         username = validated_data.get('username')
         phone = validated_data.get('phone')
         password = validated_data.get('password')
-
+        user_choices = validated_data.get('user_choices')
         if not email:
             raise ValueError(_('The Email must be set'))
-
-        user = CustomUser(email=email, username=username, phone=phone)
+        user = CustomUser(email=email, username=username, phone=phone, user_choices=user_choices)
         user.set_password(password)  # Set the password using set_password method
+        user.is_active= True
         user.save()
         return user
     
@@ -91,3 +91,10 @@ class CustomUserProductSerializer(serializers.ModelSerializer):
         model = UserProducts
         fields ='__all__'
         read_only_fields = ('user',)
+
+class CustomUserProductSellerSerializer(serializers.ModelSerializer):
+    parser_classes = (MultiPartParser, FormParser)
+    class Meta:
+        model = UserProducts
+        fields ='__all__'
+        read_only_fields = ('user','id','product_image')

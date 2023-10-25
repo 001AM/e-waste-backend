@@ -95,7 +95,8 @@ class UserProducts(models.Model):
     product_image = models.ImageField(upload_to=uploadproduct, default="",blank=True,null=True)
     status = models.CharField(choices=STATUS_CHOICES, max_length=20, default='',blank=True,null=True) 
     created_on = models.DateTimeField(auto_now=True)
-    orderno = models.CharField(max_length=30,blank=True,default=True,null=True)
+    orderno = models.CharField(max_length=30,blank=True,default='',null=True)
+    transaction_no = models.CharField(max_length=30,blank=True,default='',null=True)
 
     def __str__(self):
         return self.model 

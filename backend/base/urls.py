@@ -1,14 +1,15 @@
 app_name = 'base'
 
 from django.urls import path
-from base.api.views import CustomUserView, BlacklistTokenView, CustomUserDetailView, CustomUserProductView
+from base.api.views import CustomUserView, BlacklistTokenView, CustomUserDetailView, CustomUserProductView,CustomUserProductSellerView
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
     path('register/', CustomUserView.as_view(), name='register'),
     path('details/', CustomUserDetailView.as_view(), name='userdetail'),
-    path('products/', CustomUserProductView.as_view(), name='userdetail'),
+    path('products/', CustomUserProductView.as_view(), name='products'),
+    path('products/seller/', CustomUserProductSellerView.as_view(), name='seller'),
     path('logout/blacklist/', BlacklistTokenView.as_view(), name='blacklist')
 ]
 if settings.DEBUG:

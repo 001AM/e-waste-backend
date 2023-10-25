@@ -3,7 +3,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import CustomUserSerializer,CustomUserDetailsSerializer,CustomUserProductSerializer
+from .serializers import CustomUserSerializer,CustomUserDetailsSerializer,CustomUserProductSerializer,CustomUserProductSellerSerializer
 from base.models import CustomUser,UserProducts
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.http import Http404
@@ -61,13 +61,18 @@ class CustomUserProductView(APIView):
     serializer_class = CustomUserProductSerializer
 
     def get(self, request):
+        statusget = request.query_params.get('filter')
+        print(status)
         userid = request.user.id
         print(userid)
         try:
-            user = UserProducts.objects.filter(user=userid)
+            if statusget == 'empty':
+                user = UserProducts.objects.filter(user=userid)
+            else: 
+                user = UserProducts.objects.filter(user=userid, status=statusget)
             print(user)
             serializer = CustomUserProductSerializer(user, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_200_OK)  # Use status.HTTP_200_OK
         except UserProducts.DoesNotExist:
             raise Http404("User does not exist")
 
@@ -91,7 +96,45 @@ class CustomUserProductView(APIView):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except CustomUser.DoesNotExist:
             raise Http404("User does not exist")
-        
+
+class CustomUserProductSellerView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            ticketid = request.query_params.get('ticketid')
+            userid = request.query_params.get('id')
+            print(ticketid,userid)
+            try:
+                user = UserProducts.objects.filter(user=userid, id=ticketid)
+                print(user)
+                serializer = CustomUserProductSerializer(user, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)  # Use status.HTTP_200_OK
+            except UserProducts.DoesNotExist:
+                raise Http404("User does not exist")
+        except:
+            pass
+    
+    def post(self, request):
+        ticketid = request.POST.get('id')
+        userid = request.POST.get('user')
+        try:
+            user_product = UserProducts.objects.get(user=userid, id=ticketid)
+            # You can generate a random order number of length 10
+            import random
+            import string
+            transaction_no = ''.join(random.choices(string.ascii_uppercase + string.digits, k=15))
+            user_product.transaction_no = transaction_no
+            user_product.status = 'Yes'
+            serializer = CustomUserProductSellerSerializer(user_product, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'message': 'User product created successfully'}, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except CustomUser.DoesNotExist:
+            raise Http404("User does not exist")
+    
 class BlacklistTokenView(APIView):
     permission_classes = [AllowAny]
     def post(self, request):
