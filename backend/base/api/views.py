@@ -3,13 +3,36 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import CustomUserSerializer,CustomUserDetailsSerializer,CustomUserProductSerializer,CustomUserProductSellerSerializer
-from base.models import CustomUser,UserProducts
-from rest_framework_simplejwt.tokens import RefreshToken
+from .serializers import CustomUserSerializer,CustomUserDetailsSerializer,CustomUserProductSerializer,CustomUserProductSellerSerializer, LoginSerializer, EducationSerializer
+from base.models import CustomUser,UserProducts, Education
+from rest_framework_simplejwt.tokens import RefreshToken, Token
 from django.http import Http404
+from django.core.mail import send_mail,EmailMessage
+from django.db import transaction
+from django. shortcuts import redirect
+from django.contrib import messages
+from django.contrib.auth import authenticate, login
 from rest_framework.parsers import MultiPartParser, FormParser
 # from rest_framework.generics import RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
+from base.forms import CustomUserCreationForm
+
+
+class LoginView(APIView):
+    permission_classes = [AllowAny]
+    authentication_classes = [SessionAuthentication]
+
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.validated_data
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            }, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class CustomUserView(APIView):
@@ -56,6 +79,7 @@ class CustomUserDetailView(APIView):
         except CustomUser.DoesNotExist:
             raise Http404("User does not exist")
 
+
 class CustomUserProductView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = CustomUserProductSerializer
@@ -77,23 +101,37 @@ class CustomUserProductView(APIView):
             raise Http404("User does not exist")
 
     def post(self, request):
+        ewaste_coins = {
+    'Phone': 100,
+    'Headset': 150,
+    'Laptop': 300,
+    'Mixer': 200,
+    'Refrigerator': 500,
+    'Speaker': 250,
+    'Television': 400,
+    'Washing Machine': 450,
+}
+        user = request.user
         user_email = request.user.email
-        try:
+        try:    
             created_by = CustomUser.objects.get(email=user_email)
             user_product = UserProducts(user=created_by)
-
-            # You can generate a random order number of length 10
-            import random
-            import string
-            order_no = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
-            user_product.orderno = order_no
-            user_product.status = 'None'
-            serializer = CustomUserProductSerializer(user_product, data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response({'message': 'User product created successfully'}, status=status.HTTP_201_CREATED)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            if user_product.product_type in ewaste_coins:
+                user_product.coins = ewaste_coins[user_product.product_type]
+            with transaction.atomic():
+                # You can generate a random order number of length 10
+                import random
+                import string
+                order_no = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+                #user_product.orderno = order_no
+                #user_product.status = 'None'
+                #user.coins += user_product.coins
+                serializer = CustomUserProductSerializer(user_product, data=request.data)
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response({'message': 'User product created successfully'}, status=status.HTTP_201_CREATED)
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except CustomUser.DoesNotExist:
             raise Http404("User does not exist")
 
@@ -145,3 +183,21 @@ class BlacklistTokenView(APIView):
             return Response({'message': 'Logged out successfully'})
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+        
+class EducationView(APIView):
+    def get(self, request):
+        id = request.query_params.get('id')
+        try:
+            if id:
+                education = Education.objects.get(id=id)
+                serializer = EducationSerializer(education)
+            else:
+                education = Education.objects.all().order_by('-created_on').values()  # Optionally, add .order_by('some_field')
+                serializer = EducationSerializer(education, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Education.DoesNotExist:
+            return Response({"error": "Education record not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            # Log the exception for debugging
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        

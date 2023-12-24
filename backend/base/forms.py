@@ -50,4 +50,3 @@ class ChangeDetailForm(UserChangeForm):
         super().__init__(*args, **kwargs)
         for field_name in self.fields:
             self.fields[field_name].required = True
-
