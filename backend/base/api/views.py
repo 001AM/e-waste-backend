@@ -102,36 +102,44 @@ class CustomUserProductView(APIView):
 
     def post(self, request):
         ewaste_coins = {
-    'Phone': 100,
-    'Headset': 150,
-    'Laptop': 300,
-    'Mixer': 200,
-    'Refrigerator': 500,
-    'Speaker': 250,
-    'Television': 400,
-    'Washing Machine': 450,
-}
+            'Phone': 100,
+            'Headset': 150,
+            'Laptop': 300,
+            'Mixer': 200,
+            'Refrigerator': 500,
+            'Speaker': 250,
+            'Television': 400,
+            'Washing Machine': 450,
+        }
         user = request.user
         user_email = request.user.email
-        try:    
+
+        try:
             created_by = CustomUser.objects.get(email=user_email)
             user_product = UserProducts(user=created_by)
-            if user_product.product_type in ewaste_coins:
-                user_product.coins = ewaste_coins[user_product.product_type]
-            with transaction.atomic():
-                # You can generate a random order number of length 10
-                import random
-                import string
-                order_no = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
-                #user_product.orderno = order_no
-                #user_product.status = 'None'
-                #user.coins += user_product.coins
-                serializer = CustomUserProductSerializer(user_product, data=request.data)
-                if serializer.is_valid():
-                    serializer.save()
-                    return Response({'message': 'User product created successfully'}, status=status.HTTP_201_CREATED)
-                else:
-                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            product_type = request.data.get('product_type')
+
+            if product_type in ewaste_coins:
+                user_product.product_type = product_type
+                user_product.coins = ewaste_coins[product_type]
+
+                with transaction.atomic():
+                    # Generate a random order number of length 10
+                    import random
+                    import string
+                    order_no = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+                    user_product.orderno = order_no
+                    user_product.status = 'None'
+                    user.coins += user_product.coins
+
+                    serializer = CustomUserProductSerializer(user_product, data=request.data)
+                    if serializer.is_valid():
+                        serializer.save()
+                        user.save()
+                        return Response({'message': 'User product created successfully'}, status=status.HTTP_201_CREATED)
+                    else:
+                        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except CustomUser.DoesNotExist:
             raise Http404("User does not exist")
 

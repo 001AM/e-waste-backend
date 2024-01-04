@@ -111,6 +111,11 @@ class LoginSerializer(serializers.Serializer):
         raise ValidationError("Incorrect Credentials")
     
 class EducationSerializer(serializers.ModelSerializer):
+    image = Base64ImageField(
+        max_length=None, use_url=True,
+    )
     class Meta:
         model = Education
-        exclude = ['image']
+        fields = '__all__'
+
+       
