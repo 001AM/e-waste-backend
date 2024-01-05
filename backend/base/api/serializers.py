@@ -1,9 +1,10 @@
 from rest_framework import serializers
-from base.models import CustomUser,UserProducts
+from base.models import CustomUser,UserProducts, Education
 from django.utils.translation import gettext_lazy as _
 from rest_framework.parsers import MultiPartParser, FormParser
-
+from django.contrib.auth import authenticate
 from rest_framework import serializers    
+from rest_framework.exceptions import ValidationError
 
 class Base64ImageField(serializers.ImageField):
     """
@@ -86,7 +87,7 @@ class CustomUserProductSerializer(serializers.ModelSerializer):
     parser_classes = (MultiPartParser, FormParser)
     product_image = Base64ImageField(
         max_length=None, use_url=True,
-    ) 
+    )
     class Meta:
         model = UserProducts
         fields ='__all__'
@@ -98,3 +99,23 @@ class CustomUserProductSellerSerializer(serializers.ModelSerializer):
         model = UserProducts
         fields ='__all__'
         read_only_fields = ('user','id','product_image')
+
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        user = authenticate(email=data['email'], password=data['password'])
+        if user and user.is_active:
+            return user
+        raise ValidationError("Incorrect Credentials")
+    
+class EducationSerializer(serializers.ModelSerializer):
+    image = Base64ImageField(
+        max_length=None, use_url=True,
+    )
+    class Meta:
+        model = Education
+        fields = '__all__'
+
+
