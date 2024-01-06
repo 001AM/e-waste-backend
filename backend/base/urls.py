@@ -16,6 +16,7 @@ urlpatterns = [
    # path('logout/', LogoutView.as_view(), name='token_login'),
     path('education/', EducationView.as_view(), name='education'),
     path('events/', EventCardView.as_view(), name='eventcard'),
+    path('events_register/', EventRegistrationView.as_view(), name='events_register'),
     
 ]
 if settings.DEBUG:
