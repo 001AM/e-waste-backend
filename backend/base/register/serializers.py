@@ -39,9 +39,21 @@ class EventCardSerializer(serializers.ModelSerializer):
     img = Base64ImageField(
         max_length=None, use_url=True,
     )
+    img = Base64ImageField(max_length=None, use_url=True)
+    cast_image1 = Base64ImageField(max_length=None, use_url=True, required=False, allow_null=True)
+    cast_image2 = Base64ImageField(max_length=None, use_url=True, required=False, allow_null=True)
+    cast_image3 = Base64ImageField(max_length=None, use_url=True, required=False, allow_null=True)
+    cast_image4 = Base64ImageField(max_length=None, use_url=True, required=False, allow_null=True)
+    cast_image5 = Base64ImageField(max_length=None, use_url=True, required=False, allow_null=True)
+    cast_image6 = Base64ImageField(max_length=None, use_url=True, required=False, allow_null=True)
+    cast_image7 = Base64ImageField(max_length=None, use_url=True, required=False, allow_null=True)
+    
     class Meta:
         model = EventCard
         fields = '__all__'
+
+    def create(self, validated_data):
+        return EventCard.objects.create(**validated_data)
 
 class EventRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
