@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import EventCard
-from .serializers import EventCardSerializer
+from .serializers import EventCardSerializer, EventRegistrationSerializer
 
 class EventCardView(APIView):
     def get(self, request):
@@ -21,3 +21,11 @@ class EventCardView(APIView):
         except Exception as e:
             # Add logging here
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class EventRegistrationView(APIView):
+    def post(self, request):
+        serializer = EventRegistrationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
