@@ -106,16 +106,11 @@ class Transaction(models.Model):
     coins  = models.PositiveIntegerField()
 
 class Education(models.Model):
-    id = models.PositiveIntegerField(primary_key=True)
-    title = models.CharField(max_length=200)
-    content1 = models.TextField(null=True,blank=True)
-    content2 = models.TextField(null=True,blank=True)
-    content3 = models.TextField(null=True,blank=True)
-    author = models.CharField(max_length=100)
+    id         = models.PositiveIntegerField(primary_key=True)
+    title      = models.CharField(max_length=200)
+    content    = models.TextField()
+    author     = models.CharField(max_length=100)
     created_on = models.DateTimeField(auto_now=True, null=True)
-    image = models.ImageField(upload_to='backend',default="",blank=True,null=True)
-    def __str__(self):
-        return self.title 
-
+    image      = models.ImageField(upload_to='backend',default="",blank=True,null=True)
 
 

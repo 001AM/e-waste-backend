@@ -118,4 +118,4 @@ class EducationSerializer(serializers.ModelSerializer):
         model = Education
         fields = '__all__'
 
-
+       

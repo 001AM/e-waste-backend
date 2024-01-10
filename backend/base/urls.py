@@ -2,9 +2,9 @@ app_name = 'base'
 
 from django.urls import path
 from base.api.views import CustomUserView, BlacklistTokenView, CustomUserDetailView, CustomUserProductView,CustomUserProductSellerView, LoginView, EducationView
+from base.register.views import *
 from django.conf import settings
 from django.conf.urls.static import static
-from base.register.views import EventCardView, EventRegistrationView
 
 urlpatterns = [
     path('register/', CustomUserView.as_view(), name='register'),
@@ -15,7 +15,7 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name='token_login'),
    # path('logout/', LogoutView.as_view(), name='token_login'),
     path('education/', EducationView.as_view(), name='education'),
-    path('events/', EventCardView.as_view(), name='events'),
+    path('events/', EventCardView.as_view(), name='eventcard'),
     path('events_register/', EventRegistrationView.as_view(), name='events_register'),
     
 ]

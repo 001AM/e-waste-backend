@@ -1,15 +1,17 @@
 from rest_framework import serializers
-from base.register.models import EventCard, EventRegistration
+from base.register.models import *
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
+import base64
+import six
+import uuid
+from django.core.files.base import ContentFile
 
 class Base64ImageField(serializers.ImageField):
 
     def to_internal_value(self, data):
-        from django.core.files.base import ContentFile
-        import base64
-        import six
-        import uuid
+         
+        
 
         # Check if this is a base64 string
         if isinstance(data, six.string_types):
@@ -45,5 +47,5 @@ class EventCardSerializer(serializers.ModelSerializer):
 
 class EventRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
-        model=EventRegistration
-        fields='__all__'
+        model = EventRegistration
+        fields = '__all__'

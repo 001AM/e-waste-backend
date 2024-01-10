@@ -80,12 +80,11 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-import os 
-PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 DATABASES = {
-    'default': {
+    "default": {
+        
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(PROJECT_DIR, 'yourdatabasename.db'),
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -149,8 +148,9 @@ AUTH_USER_MODEL = 'base.CustomUser'
 
 import os 
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR , 'media')
+
 
 from datetime import timedelta
 
