@@ -40,13 +40,6 @@ class EventCardSerializer(serializers.ModelSerializer):
         max_length=None, use_url=True,
     )
     img = Base64ImageField(max_length=None, use_url=True)
-    cast_image1 = Base64ImageField(max_length=None, use_url=True, required=False, allow_null=True)
-    cast_image2 = Base64ImageField(max_length=None, use_url=True, required=False, allow_null=True)
-    cast_image3 = Base64ImageField(max_length=None, use_url=True, required=False, allow_null=True)
-    cast_image4 = Base64ImageField(max_length=None, use_url=True, required=False, allow_null=True)
-    cast_image5 = Base64ImageField(max_length=None, use_url=True, required=False, allow_null=True)
-    cast_image6 = Base64ImageField(max_length=None, use_url=True, required=False, allow_null=True)
-    cast_image7 = Base64ImageField(max_length=None, use_url=True, required=False, allow_null=True)
     
     class Meta:
         model = EventCard
@@ -59,3 +52,8 @@ class EventRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = EventRegistration
         fields = '__all__'
+
+class CastImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CastImage
+        fields = ['id', 'image', 'event']

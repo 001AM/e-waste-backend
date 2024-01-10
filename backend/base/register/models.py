@@ -5,16 +5,13 @@ class EventCard(models.Model):
     title       = models.CharField(max_length=200)
     genre       = models.CharField(max_length=100)
     date        = models.CharField(max_length=10)
-    loction     = models.CharField(max_length=100)
+    location     = models.CharField(max_length=100)
     img         = models.ImageField(upload_to='events',default="", blank=True, null=True)
     about       = models.CharField(max_length=100)
-    cast_image1 = models.ImageField(upload_to='events/cast', default="", blank=True, null=True)
-    cast_image2 = models.ImageField(upload_to='events/cast', default="", blank=True, null=True)
-    cast_image3 = models.ImageField(upload_to='events/cast', default="", blank=True, null=True)
-    cast_image4 = models.ImageField(upload_to='events/cast', default="", blank=True, null=True)
-    cast_image5 = models.ImageField(upload_to='events/cast', default="", blank=True, null=True)
-    cast_image6 = models.ImageField(upload_to='events/cast', default="", blank=True, null=True)
-    cast_image7 = models.ImageField(upload_to='events/cast', default="", blank=True, null=True)
+
+class CastImage(models.Model):
+    event = models.ForeignKey(EventCard, related_name='cast_images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='events/cast', blank=True)
 
 class EventRegistration(models.Model):
     name = models.CharField(max_length=100, default="Unknown")

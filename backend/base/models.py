@@ -108,7 +108,12 @@ class Transaction(models.Model):
 class Education(models.Model):
     id         = models.PositiveIntegerField(primary_key=True)
     title      = models.CharField(max_length=200)
-    content    = models.TextField()
+    content1    = models.TextField(blank=True)
+    content2    = models.TextField(blank=True)
+    content3    = models.TextField(blank=True)
+    content4    = models.TextField(blank=True)
+    content5    = models.TextField(blank=True)
+    content6    = models.TextField(blank=True)
     author     = models.CharField(max_length=100)
     created_on = models.DateTimeField(auto_now=True, null=True)
     image      = models.ImageField(upload_to='backend',default="",blank=True,null=True)

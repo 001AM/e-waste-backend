@@ -42,3 +42,19 @@ class EventRegistrationView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class AddCastImageView(APIView):
+    """
+    View to add a cast image to an EventCard.
+    """
+    def post(self, request, event_id, format=None):
+        try:
+            event = EventCard.objects.get(id=event_id)
+        except EventCard.DoesNotExist:
+            return Response({'error': 'EventCard not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = CastImageSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(event=event)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

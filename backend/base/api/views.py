@@ -123,23 +123,20 @@ class CustomUserProductView(APIView):
             if product_type in ewaste_coins:
                 user_product.product_type = product_type
                 user_product.coins = ewaste_coins[product_type]
-
-                with transaction.atomic():
                     # Generate a random order number of length 10
-                    import random
-                    import string
-                    order_no = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
-                    user_product.orderno = order_no
-                    user_product.status = 'None'
-                    user.coins += user_product.coins
+            import random
+            import string
+            order_no = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+            user_product.orderno = order_no
+            user_product.status = 'None'
 
-                    serializer = CustomUserProductSerializer(user_product, data=request.data)
-                    if serializer.is_valid():
-                        serializer.save()
-                        user.save()
-                        return Response({'message': 'User product created successfully'}, status=status.HTTP_201_CREATED)
-                    else:
-                        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            serializer = CustomUserProductSerializer(user_product, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                user.save()
+                return Response({'message': 'User product created successfully'}, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except CustomUser.DoesNotExist:
             raise Http404("User does not exist")
 

@@ -13,10 +13,11 @@ urlpatterns = [
     path('products/seller/', CustomUserProductSellerView.as_view(), name='seller'),
     path('logout/blacklist/', BlacklistTokenView.as_view(), name='blacklist'),
     path('login/', LoginView.as_view(), name='token_login'),
-   # path('logout/', LogoutView.as_view(), name='token_login'),
+    # path('logout/', LogoutView.as_view(), name='token_login'),
     path('education/', EducationView.as_view(), name='education'),
     path('events/', EventCardView.as_view(), name='eventcard'),
     path('events_register/', EventRegistrationView.as_view(), name='events_register'),
+    path('events/<int:event_id>/add', AddCastImageView.as_view(), name='add-cast-image'),
     
 ]
 if settings.DEBUG:
