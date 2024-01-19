@@ -1,1 +1,1 @@
-# e-waste-backend
+ python -m pip install --upgrade pip# e-waste-backend

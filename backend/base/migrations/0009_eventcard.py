@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
                 ('title', models.CharField(max_length=200)),
                 ('genre', models.CharField(max_length=100)),
                 ('date', models.CharField(max_length=10)),
-                ('location', models.CharField(max_length=100)),
+                ('loction', models.CharField(max_length=100)),
                 ('img', models.ImageField(blank=True, default='', null=True, upload_to='events')),
                 ('about', models.CharField(max_length=100)),
                 ('cast_image1', models.ImageField(blank=True, default='', null=True, upload_to='events/cast')),

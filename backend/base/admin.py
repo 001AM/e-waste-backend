@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 from .models import CustomUser,UserProducts, Education
 from base.register.models import EventRegistration
-from base.register.models import EventCard
+from base.register.models import EventCard, CastImage
 
 class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
@@ -32,3 +32,4 @@ admin.site.register(UserProducts)
 admin.site.register(Education)
 admin.site.register(EventCard)
 admin.site.register(EventRegistration)
+admin.site.register(CastImage)
